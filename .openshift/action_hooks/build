@@ -6,6 +6,7 @@
 
 echo "Executing 'manage.py syncdb --noinput'"
 python $OPENSHIFT_REPO_DIR/wsgi/pypi/manage.py syncdb --noinput
+python $OPENSHIFT_REPO_DIR/wsgi/pypi/manage.py loaddata $OPENSHIFT_REPO_DIR/wsgi/pypi/fixtures/initial_data.json
 
 echo "Executing 'manage.py collectstatic'"
 python $OPENSHIFT_REPO_DIR/wsgi/pypi/manage.py collectstatic --noinput
