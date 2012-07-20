@@ -6,6 +6,9 @@ from re import search
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+PASSWORD_PROTECT_PYPI = True
+LOGIN_REDIRECT_URL = '/'
+
 ADMINS = (
 # ('Your Name', 'your_email@example.com'),
 )
