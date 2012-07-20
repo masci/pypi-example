@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-A replacement for ``django.conf.urls.defaults.include`` that takes a decorator,
-or an iterable of view decorators as the first argument and applies them, in
-reverse order, to all views in the included urlconf.
-"""
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import RegexURLPattern, RegexURLResolver
 from django.utils.importlib import import_module
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
+
+import base64
+
 
 class DecoratedPatterns(object):
     """
@@ -82,3 +82,57 @@ def decorator_include(decorators, arg, namespace=None, app_name=None):
         urlconf = arg
     decorated_urlconf = DecoratedPatterns(urlconf, decorators)
     return (decorated_urlconf, app_name, namespace)
+
+
+def user_passes_test(test_func, realm):
+    """
+    Decorator for views that checks that the user passes the given test,
+    asking for HTTP basic auth  if necessary. The test should be a callable
+    that takes the user object and returns True if the user passes.
+
+    """
+    def decorator(view_func):
+        def _wrapped_view(request, *args, **kwargs):
+            if test_func(request.user):
+                return view_func(request, *args, **kwargs)
+
+            # They are not logged in. See if they provided login credentials
+            #
+            if 'HTTP_AUTHORIZATION' in request.META:
+                auth = request.META['HTTP_AUTHORIZATION'].split()
+                if len(auth) == 2:
+                    # NOTE: We are only support basic authentication for now.
+                    #
+                    if auth[0].lower() == "basic":
+                        uname, passwd = base64.b64decode(auth[1]).split(':')
+                        user = authenticate(username=uname, password=passwd)
+                        if user is not None and user.is_active:
+                            login(request, user)
+                            request.user = user
+                            return view_func(request, *args, **kwargs)
+
+            # Either they did not provide an authorization header or
+            # something in the authorization attempt failed. Send a 401
+            # back to them to ask them to authenticate.
+            #
+            response = HttpResponse()
+            response.status_code = 401
+            response['WWW-Authenticate'] = 'Basic realm="%s"' % realm
+            return response
+        return _wrapped_view
+    return decorator
+
+
+def basicauth_required(function=None, realm = ""):
+    """
+    Decorator for views that checks that the user is logged in, asking for
+    basic HTTP credentials if necessary.
+    """
+    actual_decorator = user_passes_test(
+        lambda u: u.is_authenticated(),
+        realm=realm
+    )
+    if function:
+        return actual_decorator(function)
+    return actual_decorator
+
