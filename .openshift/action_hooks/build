@@ -4,5 +4,8 @@
 # before the deploy step.  This script gets executed directly, so it
 # could be python, php, ruby, etc.
 
-echo "Executing 'python $OPENSHIFT_REPO_DIR/wsgi/pypi/manage.py syncdb --noinput'"
+echo "Executing 'manage.py syncdb --noinput'"
 python $OPENSHIFT_REPO_DIR/wsgi/pypi/manage.py syncdb --noinput
+
+echo "Executing 'manage.py collectstatic'"
+python $OPENSHIFG_REPO_DIR/wsgi/pypi/manage.py collectstatic
