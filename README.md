@@ -12,7 +12,7 @@ Create a "Python 2.6" application called 'pypi' or whatever
 
 Add this upstream seambooking repo
 
-    cd django
+    cd pypi
     git remote add upstream -m master git://github.com/masci/pypi-example.git
     git pull -s recursive -X theirs upstream master
     
