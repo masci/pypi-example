@@ -9,11 +9,10 @@ How to run on OpenShift
 Create a "Python 2.6" application called 'pypi' or whatever, then clone the
 application repository.
 
-Add this repo as an upstream remote and pull contents
+Pull contents from this repository
 
     cd pypi
-    git remote add upstream -m master git://github.com/masci/pypi-example.git
-    git pull -s recursive -X theirs upstream master
+    git pull -s recursive -X theirs git://github.com/masci/pypi-example.git master
     
 Then push to your app repo
 
