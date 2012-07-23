@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, include, url
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from decorators import decorator_include
-from decorators import basicauth_required
+from djangopypi.decorators import basic_auth
 
 from django.contrib import admin
 admin.autodiscover()
@@ -14,7 +13,7 @@ media_url = r'^%s%s/(?P<path>.*)$' % (
     )
 
 if settings.PASSWORD_PROTECT_PYPI:
-    pypi_urls = url(r'', decorator_include(basicauth_required, "djangopypi.urls"))
+    pypi_urls = url(r'', decorator_include(basic_auth, "djangopypi.urls"))
 else:
     pypi_urls = url(r'', include("djangopypi.urls"))
 
