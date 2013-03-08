@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
     try:
         # activate virtualenv
-        virtenv = os.path.join(os.environ['OPENSHIFT_GEAR_DIR'], 'virtenv')
+        virtenv = os.path.join(os.environ['OPENSHIFT_HOMEDIR'], 'python-2.6/virtenv')
         activate_this = os.path.join(virtenv, 'bin', 'activate_this.py')
         execfile(activate_this, dict(__file__=activate_this))
     except:
